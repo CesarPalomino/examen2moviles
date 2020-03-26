@@ -31,3 +31,36 @@ class CloudStoreGetData extends ApuntesState {
   @override
   List<Object> get props => [];
 }
+// nuevos estdos
+class CargandoDatos extends ApuntesState {
+  final bool isLoading;
+
+  CargandoDatos({@required this.isLoading});
+   @override
+  List<Object> get props => [isLoading];
+}
+
+
+class UrldeImagen extends ApuntesState {
+  final String urlimagen;
+
+  UrldeImagen({@required this.urlimagen});
+   @override
+  List<Object> get props => [urlimagen];
+}
+
+
+class BooldeApunte extends ApuntesState{
+  final bool b;
+
+  BooldeApunte({@required this.b});
+
+  List<Object> get props => [b];
+}
+class ImagedeGaleria extends ApuntesState{
+  final File imagen;
+
+  ImagedeGaleria({@required this.imagen});
+
+  List<Object> get props => [imagen];
+}

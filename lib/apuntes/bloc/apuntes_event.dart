@@ -22,14 +22,30 @@ class RemoveDataEvent extends ApuntesEvent {
 class SaveDataEvent extends ApuntesEvent {
   final String materia;
   final String descripcion;
-  final String imageUrl;
 
   SaveDataEvent({
     @required this.materia,
-    @required this.descripcion,
-    @required this.imageUrl,
+    @required this.descripcion
   });
 
   @override
-  List<Object> get props => [materia, descripcion, imageUrl];
+  List<Object> get props => [materia, descripcion];
+}
+
+//implementar eventos de apuntes 
+class ApuntesCargados extends ApuntesEvent {
+  
+  @override
+  List<Object> get props => [];
+}
+class ImagenSeleccionada extends ApuntesEvent {
+
+   @override
+  List<Object> get props => [];
+}
+
+class BotonGuardar extends ApuntesEvent {
+  
+  @override
+  List<Object> get props => [];
 }

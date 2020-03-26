@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:practica_dos/models/apunte.dart';
+import 'package:path/path.dart' as Path;
 
 part 'apuntes_event.dart';
 part 'apuntes_state.dart';
@@ -17,6 +21,8 @@ class ApuntesBloc extends Bloc<ApuntesEvent, ApuntesState> {
 
   @override
   ApuntesState get initialState => ApuntesInitial();
+  File imagenTemporal;
+  bool temp;
 
   @override
   Stream<ApuntesState> mapEventToState(
@@ -31,10 +37,11 @@ class ApuntesBloc extends Bloc<ApuntesEvent, ApuntesState> {
           errorMessage: "No se ha podido conseguir datos.",
         );
     } else if (event is SaveDataEvent) {
+      String url = await _uploadFile();
       bool saved = await _saveApunte(
         event.materia,
         event.descripcion,
-        event.imageUrl,
+        url,
       );
       if (saved) {
         await _getData();
@@ -54,6 +61,13 @@ class ApuntesBloc extends Bloc<ApuntesEvent, ApuntesState> {
           errorMessage: "Ha ocurrido un error. Intente borrar mas tarde.",
         );
       }
+    } else if (event is ImagenSeleccionada) {
+      //TODO nuevos
+      imagenTemporal = await _chooseImage();
+      yield ImagedeGaleria(imagen: imagenTemporal);
+    } else if (event is ApuntesCargados) {
+      yield BooldeApunte(b: temp);
+      
     }
   }
 
@@ -94,5 +108,35 @@ class ApuntesBloc extends Bloc<ApuntesEvent, ApuntesState> {
       print(err.toString());
       return false;
     }
+  }
+
+  // implementar metodos a bloc de add_apuntes
+
+  Future<File> _chooseImage() async {
+    File _imagenTemp;
+    await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 720,
+      maxWidth: 720,
+    ).then((image) {
+      _imagenTemp = image;
+    });
+    return _imagenTemp;
+  }
+
+
+  Future<String> _uploadFile() async {
+
+    String filePath = imagenTemporal.path;
+    StorageReference reference = FirebaseStorage.instance
+        .ref()
+        .child("apuntes/${Path.basename(filePath)}");
+    StorageUploadTask uploadTask = reference.putFile(imagenTemporal);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    taskSnapshot.ref.getDownloadURL().then((imageUrl) {
+      print("Link>>>>> $imageUrl");
+    });
+
+    return await reference.getDownloadURL();
   }
 }

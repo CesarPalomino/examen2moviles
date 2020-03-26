@@ -20,9 +20,70 @@ class ItemApuntes extends StatefulWidget {
 }
 
 class _ItemApuntesState extends State<ItemApuntes> {
+  ApuntesBloc apunBlock;
   @override
   Widget build(BuildContext context) {
+    apunBlock = BlocProvider.of(context);
     return Card(
+              margin: EdgeInsets.all(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    actions: <Widget>[
+                                      MaterialButton(
+                                          child: Text("Cancelar"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          }),
+                                      MaterialButton(
+                                          child: Text("Borrar"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            apunBlock.add(
+                                              RemoveDataEvent(
+                                                  index: widget.index),
+                                            );
+                                          })
+                                    ],
+                                  ));
+                        },
+                      )
+                    ],
+                  ),
+                  Image.network(
+                    widget.imageUrl ?? "https://via.placeholder.com/150",
+                    height: 150,
+                    width: 150,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    child: Text(
+                      "${widget.materia}",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Text("${widget.descripcion}"),
+                  ),
+                  SizedBox(height: 12),
+                ],
+              ),
+            );
+  }
+}
+
+/*Card(
       margin: EdgeInsets.all(12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -60,6 +121,4 @@ class _ItemApuntesState extends State<ItemApuntes> {
           SizedBox(height: 12),
         ],
       ),
-    );
-  }
-}
+    );*/
